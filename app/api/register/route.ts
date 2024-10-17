@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (existingUser) {
-      return NextResponse.json({ error: 'Username already taken' }, { status: 400 });
+      return NextResponse.json({ error: 'Share With your Friends' }, { status: 400 });
     }
 
     // Create the user in the database

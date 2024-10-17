@@ -36,10 +36,10 @@ export default function Home() {
             <span className="text-2xl font-bold text-blue-400 hover:text-blue-300 transition duration-300">SecretWhisper</span>
           </Link>
           <div className="hidden md:flex space-x-6">
-            <Link href="/login">
+            <Link href="/sign-in">
               <span className="hover:text-blue-300 transition duration-300">Login</span>
             </Link>
-            <Link href="/signup">
+            <Link href="/sign-up">
               <span className="hover:text-blue-300 transition duration-300">Sign Up</span>
             </Link>
           </div>

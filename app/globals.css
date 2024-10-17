@@ -12,6 +12,44 @@ body {
   }
 }
 
+.cl-formButtonPrimary {
+  font-size: 14px;
+  text-transform: none;
+  background-color: #611bbd;
+}
+
+.cl-card{
+  background-color: #dbebed;
+  color: black;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  border: 1px solid #611bbd;
+  box-shadow: 0 0 0 1px #611bbd;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  border: 1px solid #611bbd;
+  box-shadow: 0 0 0 1px #611bbd;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  border: 1px solid #611bbd;
+  box-shadow: 0 0 0 1px #611bbd;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.cl-headerSubtitle{
+  color: #050109;
+}
+.cl-socialButtonsBlockButtonText{
+  color: #050109;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
