@@ -10,6 +10,19 @@ const config: Config = {
   theme: {
   	extend: {
   		colors: {
+			'neon-green': '#39FF14',
+        'neon-blue': '#4D4DFF',
+        'neon-purple': '#FF00FF',
+        'pastel-pink': '#FFD1DC',
+        'pastel-blue': '#AEC6CF',
+        'pastel-yellow': '#FDFD96',
+        'pastel-green': '#77DD77',
+        'pastel-purple': '#B39EB5',
+        'retro-yellow': '#FFD800',
+        'retro-red': '#FF0000',
+        'retro-green': '#00FF00',
+        'retro-orange': '#FF7F00',
+        'retro-pink': '#FF69B4',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
