@@ -1,22 +1,23 @@
-"use client";
+'use client'
 
-import React, { useState, useEffect } from "react";
-import { Clipboard, X, Zap, Sparkles, MessageCircle, Trash2, Menu } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { nanoid } from "nanoid";
-import Link from "next/link";
-import { useUser } from "@clerk/nextjs";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect, useRef } from "react"
+import { Clipboard, X, Zap, Sparkles, MessageCircle, Trash2, Menu, Tag, ChevronDown, ChevronUp } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { nanoid } from "nanoid"
+import Link from "next/link"
+import { useUser } from "@clerk/nextjs"
+import { motion, AnimatePresence } from "framer-motion"
 
 interface Message {
-  id: string;
-  sender: string;
-  content: string;
-  sentAt: string;
+  id: string
+  sender: string
+  content: string
+  sentAt: string
+  messageType: string
 }
 
 function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
     <nav className="bg-gray-900 shadow-md">
@@ -57,102 +58,129 @@ function Navbar() {
         )}
       </AnimatePresence>
     </nav>
-  );
+  )
 }
 
-function Footer() {
+function MessageTypeTag({ type }: { type: string }) {
+  const getTagColor = (type: string) => {
+    switch (type) {
+      case 'dare':
+        return 'bg-red-500 text-white'
+      case 'confession':
+        return 'bg-pink-500 text-white'
+      case 'fun':
+        return 'bg-yellow-500 text-black'
+      case 'request':
+        return 'bg-blue-500 text-white'
+      default:
+        return 'bg-gray-500 text-white'
+    }
+  }
+
   return (
-    <footer className="bg-gray-900 shadow-md mt-auto">
-    <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-      <p className="text-center text-gray-500 text-sm">
-        © 2023 PookieSMS. All rights reserved.
-      </p>
-    </div>
-  </footer>
-  );
+    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getTagColor(type)}`}>
+      <Tag className="w-3 h-3 mr-1" />
+      {type.charAt(0).toUpperCase() + type.slice(1)}
+    </span>
+  )
 }
 
 export default function Dashboard() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
-  const [copied, setCopied] = useState(false);
-  const [uniqueLink, setUniqueLink] = useState("");
-  const [url, setUrl] = useState("");
-  const { user } = useUser();
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([])
+  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
+  const [copied, setCopied] = useState(false)
+  const [uniqueLink, setUniqueLink] = useState("")
+  const [url, setUrl] = useState("")
+  const { user } = useUser()
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [visibleMessages, setVisibleMessages] = useState(4)
+  const messageContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const storedLink = localStorage.getItem("uniqueLink");
+    const storedLink = localStorage.getItem("uniqueLink")
     if (storedLink) {
-      setUniqueLink(storedLink);
-      const generatedId = storedLink.split("/").pop();
-      setUrl(generatedId || "");
+      setUniqueLink(storedLink)
+      const generatedId = storedLink.split("/").pop()
+      setUrl(generatedId || "")
     } else {
-      const newId = nanoid();
-      const newLink = `${window.location.origin}/sms/${newId}`;
-      setUniqueLink(newLink);
-      setUrl(newId);
-      localStorage.setItem("uniqueLink", newLink);
+      const newId = nanoid()
+      const newLink = `${window.location.origin}/sms/${newId}`
+      setUniqueLink(newLink)
+      setUrl(newId)
+      localStorage.setItem("uniqueLink", newLink)
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
     const registerUser = async () => {
-      if (!user?.username || !uniqueLink) return;
+      if (!user?.username || !uniqueLink) return
       try {
         const response = await fetch("/api/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username: user.username, url: url }),
-        });
+        })
         if (!response.ok) {
-          const errorData = await response.json();
-          setErrorMessage(errorData.error || "Error registering user");
+          const errorData = await response.json()
+          setErrorMessage(errorData.error || "Error registering user")
         } else {
-          setErrorMessage(null);
+          setErrorMessage(null)
         }
       } catch (error) {
-        console.error("Error registering user:", error);
-        setErrorMessage("An unexpected error occurred");
+        console.error("Error registering user:", error)
+        setErrorMessage("An unexpected error occurred")
       }
-    };
-    registerUser();
-  }, [uniqueLink, user?.username, url]);
+    }
+    registerUser()
+  }, [uniqueLink, user?.username, url])
 
   useEffect(() => {
     const fetchMessages = async () => {
-      if (!user?.username) return;
+      if (!user?.username) return
       try {
-        const response = await fetch(`/api/getMessages?username=${encodeURIComponent(user.username)}`);
-        if (!response.ok) throw new Error("Failed to fetch messages");
-        const data: Message[] = await response.json();
-        setMessages(data);
+        const response = await fetch(`/api/getMessages?username=${encodeURIComponent(user.username)}`)
+        if (!response.ok) throw new Error("Failed to fetch messages")
+        const data: Message[] = await response.json()
+        setMessages(data)
       } catch (error) {
-        console.error("Error fetching messages:", error);
-        setErrorMessage("Failed to load messages");
+        console.error("Error fetching messages:", error)
+        setErrorMessage("Failed to load messages")
       }
-    };
-    fetchMessages();
-  }, [user?.username]);
+    }
+    fetchMessages()
+  }, [user?.username])
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(uniqueLink);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 3000);
-  };
+    navigator.clipboard.writeText(uniqueLink)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 3000)
+  }
 
   const formatDate = (dateString: string | number | Date) => {
-    const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
+    const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }
+    return new Date(dateString).toLocaleDateString(undefined, options)
+  }
 
   const truncateContent = (content: string, maxLength = 50) => {
-    return content.length > maxLength ? content.substring(0, maxLength) + "..." : content;
-  };
+    return content.length > maxLength ? content.substring(0, maxLength) + "..." : content
+  }
 
   const deleteMessage = (id: string) => {
-    setMessages(messages.filter(message => message.id !== id));
-  };
+    setMessages(messages.filter(message => message.id !== id))
+  }
+
+  const loadMoreMessages = () => {
+    setVisibleMessages(prevVisible => prevVisible + 4)
+  }
+
+  const handleScroll = () => {
+    if (messageContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = messageContainerRef.current
+      if (scrollTop + clientHeight >= scrollHeight - 20) {
+        loadMoreMessages()
+      }
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-800">
@@ -178,9 +206,13 @@ export default function Dashboard() {
               <MessageCircle className="mr-2" /> Message Inbox
             </h2>
             <div className="bg-gray-700 shadow-md rounded-lg p-4">
-              <AnimatePresence>
-                {messages.length > 0 ? (
-                  messages.map((message) => (
+              <div 
+                ref={messageContainerRef}
+                className="max-h-96 overflow-y-auto pr-2"
+                onScroll={handleScroll}
+              >
+                <AnimatePresence>
+                  {messages.slice(0, visibleMessages).map((message) => (
                     <motion.div
                       key={message.id}
                       className="border-b border-gray-600 py-3 cursor-pointer hover:bg-gray-600 transition duration-300 rounded-md mb-2"
@@ -194,13 +226,30 @@ export default function Dashboard() {
                         <h3 className="font-semibold text-gray-200">{message.sender}</h3>
                         <span className="text-xs text-gray-400">{formatDate(message.sentAt)}</span>
                       </div>
-                      <p className="text-sm text-gray-300">{truncateContent(message.content)}</p>
+                      <p className="text-sm text-gray-300 mb-2">{truncateContent(message.content)}</p>
+                      <MessageTypeTag type={message.messageType} />
                     </motion.div>
-                  ))
-                ) : (
-                  <p className="text-gray-400">No messages yet.</p>
-                )}
-              </AnimatePresence>
+                  ))}
+                </AnimatePresence>
+              </div>
+              {visibleMessages < messages.length && (
+                <button
+                  onClick={loadMoreMessages}
+                  className="mt-4 w-full text-center text-gray-400 hover:text-gray-200 transition duration-300"
+                >
+                  <ChevronDown className="inline-block mr-2" />
+                  Load More
+                </button>
+              )}
+              {visibleMessages > 4 && (
+                <button
+                  onClick={() => setVisibleMessages(4)}
+                  className="mt-2 w-full text-center text-gray-400 hover:text-gray-200 transition duration-300"
+                >
+                  <ChevronUp className="inline-block mr-2" />
+                  Show Less
+                </button>
+              )}
             </div>
           </motion.div>
 
@@ -242,6 +291,7 @@ export default function Dashboard() {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.8, opacity: 0 }}
                 transition={{ duration: 0.3 }}
+                onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-xl font-semibold text-gray-100">{selectedMessage.sender}</h2>
@@ -250,7 +300,10 @@ export default function Dashboard() {
                   </button>
                 </div>
                 <p className="text-gray-300 mb-4">{selectedMessage.content}</p>
-                <div className="text-xs text-gray-500 text-right">{formatDate(selectedMessage.sentAt)}</div>
+                <div className="flex justify-between items-center">
+                  <MessageTypeTag type={selectedMessage.messageType} />
+                  <span className="text-xs text-gray-500">{formatDate(selectedMessage.sentAt)}</span>
+                </div>
                 <div className="mt-4 flex justify-between">
                   <button
                     onClick={() => deleteMessage(selectedMessage.id)}
@@ -263,9 +316,7 @@ export default function Dashboard() {
             </motion.div>
           </AnimatePresence>
         )}
-
       </div>
-      <Footer />
     </div>
-  );
+  )
 }

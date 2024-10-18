@@ -21,11 +21,15 @@ model User {
   messages Message[]
 }
 
+
+
+
 model Message {
-  id        Int      @id @default(autoincrement()) // Auto-incrementing message ID
-  sender    String
-  content   String
-  sentAt    DateTime @default(now()) // Default to current timestamp
-  userId    String   // Foreign key referencing the User
-  user      User     @relation(fields: [userId], references: [url])
+  id          Int      @id @default(autoincrement())
+  sender      String
+  content     String
+  messageType String   // Make sure this line is present
+  sentAt      DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
 }

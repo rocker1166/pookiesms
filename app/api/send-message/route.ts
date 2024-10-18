@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import prisma from '../../lib/db'
 
 export async function POST(request: Request) {
-  const { id, nickname, message } = await request.json()
+  const { id, nickname, message, messageType } = await request.json()
 
   try {
     const user = await prisma.user.findUnique({
@@ -17,7 +17,12 @@ export async function POST(request: Request) {
       data: {
         sender: nickname,
         content: message,
-        userId: user.id,
+        messageType: messageType, // Make sure this line is included
+        user: {
+          connect: {
+            id: user.id
+          }
+        }
       },
     })
 
