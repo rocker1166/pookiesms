@@ -104,7 +104,7 @@ export default function Dashboard() {
       setUrl(generatedId || "")
     } else {
       const newId = nanoid()
-      const newLink = `${window.location.origin}/sms/${newId}`
+      const newLink = `https://pookiesms.vercel.app/sms/${newId}`
       setUniqueLink(newLink)
       setUrl(newId)
       localStorage.setItem("uniqueLink", newLink)
