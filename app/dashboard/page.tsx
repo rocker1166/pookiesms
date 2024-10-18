@@ -1,33 +1,41 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import { Clipboard, X } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { nanoid } from 'nanoid';
-import Link from 'next/link';
-import { useUser } from '@clerk/nextjs';
+import React, { useState, useEffect } from "react";
+import { Clipboard, X } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { nanoid } from "nanoid";
+import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
+
+// Define the type for message
+interface Message {
+  id: string;
+  sender: string;
+  content: string;
+  sentAt: string;
+}
 
 const Dashboard = () => {
-  const [messages, setMessages] = useState([]);
-  const [selectedMessage, setSelectedMessage] = useState(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [copied, setCopied] = useState(false);
-  const [uniqueLink, setUniqueLink] = useState('');
-  const [url, setUrl] = useState('');
+  const [uniqueLink, setUniqueLink] = useState("");
+  const [url, setUrl] = useState("");
   const { user } = useUser();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Generate or fetch the unique link from localStorage and store nanoid in url state
   useEffect(() => {
-    const storedLink = localStorage.getItem('uniqueLink');
+    const storedLink = localStorage.getItem("uniqueLink");
     if (storedLink) {
       setUniqueLink(storedLink);
-      const generatedId = storedLink.split('/').pop();
-      setUrl(generatedId || '');
+      const generatedId = storedLink.split("/").pop();
+      setUrl(generatedId || "");
     } else {
       const newId = nanoid();
       const newLink = `${window.location.origin}/sms/${newId}`;
       setUniqueLink(newLink);
       setUrl(newId);
-      localStorage.setItem('uniqueLink', newLink);
+      localStorage.setItem("uniqueLink", newLink);
     }
   }, []);
 
@@ -37,10 +45,10 @@ const Dashboard = () => {
       if (!user?.username || !uniqueLink) return;
 
       try {
-        const response = await fetch('/api/register', {
-          method: 'POST',
+        const response = await fetch("/api/register", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             username: user.username,
@@ -50,13 +58,13 @@ const Dashboard = () => {
 
         if (!response.ok) {
           const errorData = await response.json();
-          setErrorMessage(errorData.error || 'Error registering user');
+          setErrorMessage(errorData.error || "Error registering user");
         } else {
           setErrorMessage(null);
         }
       } catch (error) {
-        console.error('Error registering user:', error);
-        setErrorMessage('An unexpected error occurred');
+        console.error("Error registering user:", error);
+        setErrorMessage("An unexpected error occurred");
       }
     };
 
@@ -69,15 +77,17 @@ const Dashboard = () => {
       if (!user?.username) return;
 
       try {
-        const response = await fetch(`/api/getMessages?username=${encodeURIComponent(user.username)}`);
+        const response = await fetch(
+          `/api/getMessages?username=${encodeURIComponent(user.username)}`
+        );
         if (!response.ok) {
-          throw new Error('Failed to fetch messages');
+          throw new Error("Failed to fetch messages");
         }
-        const data = await response.json();
+        const data: Message[] = await response.json();
         setMessages(data);
       } catch (error) {
-        console.error('Error fetching messages:', error);
-        setErrorMessage('Failed to load messages');
+        console.error("Error fetching messages:", error);
+        setErrorMessage("Failed to load messages");
       }
     };
 
@@ -91,18 +101,28 @@ const Dashboard = () => {
   };
 
   const formatDate = (dateString: string | number | Date) => {
-    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+    const options: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
   const truncateContent = (content: string, maxLength = 50) => {
-    return content.length > maxLength ? content.substring(0, maxLength) + '...' : content;
+    return content.length > maxLength
+      ? content.substring(0, maxLength) + "..."
+      : content;
   };
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-4">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8"><Link href='/'>PookieSMS</Link></h1>
+        <h1 className="text-3xl font-bold mb-8">
+          <Link href="/">PookieSMS</Link>
+        </h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2">
@@ -117,9 +137,13 @@ const Dashboard = () => {
                   >
                     <div className="flex justify-between items-start mb-1">
                       <h3 className="font-semibold">{message.sender}</h3>
-                      <span className="text-xs text-gray-400">{formatDate(message.sentAt)}</span>
+                      <span className="text-xs text-gray-400">
+                        {formatDate(message.sentAt)}
+                      </span>
                     </div>
-                    <p className="text-sm text-gray-300">{truncateContent(message.content)}</p>
+                    <p className="text-sm text-gray-300">
+                      {truncateContent(message.content)}
+                    </p>
                   </div>
                 ))
               ) : (
@@ -129,7 +153,9 @@ const Dashboard = () => {
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold mb-4">Welcome, {user?.username}</h2>
+            <h2 className="text-xl font-semibold mb-4">
+              Welcome, {user?.username}
+            </h2>
             <div className="bg-gray-800 rounded-lg p-4 mb-6">
               <h3 className="text-lg font-semibold mb-2">Your Secret Link</h3>
               <p className="mb-2">Share this link to receive anonymous messages:</p>
@@ -168,7 +194,9 @@ const Dashboard = () => {
             <div className="flex justify-between items-start mb-4">
               <div>
                 <h2 className="text-2xl font-bold">{selectedMessage.sender}</h2>
-                <p className="text-sm text-gray-400">{formatDate(selectedMessage.sentAt)}</p>
+                <p className="text-sm text-gray-400">
+                  {formatDate(selectedMessage.sentAt)}
+                </p>
               </div>
               <button
                 onClick={() => setSelectedMessage(null)}
