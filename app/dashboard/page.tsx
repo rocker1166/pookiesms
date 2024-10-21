@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from "react"
 import { Clipboard, X, Zap, Sparkles, MessageCircle, Trash2, Menu, Tag, ChevronDown, ChevronUp } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
 import { nanoid } from "nanoid"
 import Link from "next/link"
 import { useUser } from "@clerk/nextjs"
@@ -151,10 +150,31 @@ export default function Dashboard() {
   }, [user?.username])
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(uniqueLink)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 3000)
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(uniqueLink)
+        .then(() => {
+          setCopied(true)
+          setTimeout(() => setCopied(false), 3000)
+        })
+        .catch((error) => {
+          console.error('Failed to copy text: ', error)
+        })
+    } else {
+      const textarea = document.createElement('textarea')
+      textarea.value = uniqueLink
+      document.body.appendChild(textarea)
+      textarea.select()
+      try {
+        document.execCommand('copy')
+        setCopied(true)
+        setTimeout(() => setCopied(false), 3000)
+      } catch (error) {
+        console.error('Fallback: Unable to copy', error)
+      }
+      document.body.removeChild(textarea)
+    }
   }
+  
 
   const formatDate = (dateString: string | number | Date) => {
     const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }
