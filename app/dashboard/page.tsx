@@ -96,28 +96,28 @@ export default function Dashboard() {
   const messageContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const storedLink = localStorage.getItem("uniqueLink")
-    if (storedLink) {
-      setUniqueLink(storedLink)
-      const generatedId = storedLink.split("/").pop()
-      setUrl(generatedId || "")
+    if (user?.id) {
+      const id = user?.id?.replace("user_", "") || ""
+      const newLink = `https://pookiesms.vercel.app/sms/${id}`
+        setUniqueLink(newLink)
+        setUrl(id)
+        localStorage.setItem("uniqueLink", newLink)
+      
     } else {
-      const newId = nanoid()
-      const newLink = `https://pookiesms.vercel.app/sms/${newId}`
-      setUniqueLink(newLink)
-      setUrl(newId)
-      localStorage.setItem("uniqueLink", newLink)
+      console.log("User object or ID is undefined:")
     }
-  }, [])
+  }, [user])
+  console.log(user)
 
   useEffect(() => {
     const registerUser = async () => {
+      const id = user?.id.replace("user_", "")
       if (!user?.username || !uniqueLink) return
       try {
         const response = await fetch("/api/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username: user.username, url: url }),
+          body: JSON.stringify({ username: user.username, url: id }),
         })
         if (!response.ok) {
           const errorData = await response.json()
