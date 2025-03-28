@@ -103,7 +103,7 @@ export default function Home() {
 
       <footer className="bg-black bg-opacity-50 backdrop-filter backdrop-blur-lg p-4 mt-16">
         <div className="container mx-auto text-center">
-          <p>&copy; 2024 PookieSMS. Made by  :  <Link className='text-blue-400 font-semibold' href="sumanjana.xyz">Suman Jana</Link> .</p>
+          <p>&copy; 2024 PookieSMS. Made by  :  <Link className='text-blue-400 font-semibold' href="https://sumanjana.vercel.app/">Suman Jana</Link> .</p>
           <div className="mt-2 space-x-4">
             <Link href="/privacy">
               <span className="text-sm hover:text-blue-300 transition duration-300">Privacy Policy</span>
