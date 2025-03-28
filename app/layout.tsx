@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import {ClerkProvider} from '@clerk/nextjs'
-import Background from "@/components/Background";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -16,7 +15,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "PoopieSMS",
+  title: "PookieSMS",
   description: "Created by suman jana",
 };
 
