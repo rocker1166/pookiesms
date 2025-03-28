@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import Background from '@/components/Background'
 
 const suggestionData = {
   dare: [
@@ -138,12 +139,13 @@ export default function SMSPage() {
   )
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 flex items-center justify-center p-4">
+    <div className="min-h-screen  text-gray-100 flex items-center justify-center p-4">
+      <Background />
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-4xl bg-gray-800 rounded-lg shadow-lg p-6 space-y-6"
+        className="w-full max-w-4xl rounded-lg shadow-lg p-6 space-y-6  backdrop-blur-xl border-2 border-blue-950 "
       >
         <div className="flex flex-col md:flex-row gap-6">
           <div className="md:w-1/2">
@@ -234,7 +236,7 @@ export default function SMSPage() {
           onClick={() => router.push('/')}
         >
           <ArrowLeft className="h-4 w-4" />
-          <span>Back</span>
+          <span>Create your own link </span>
         </Button>
       </motion.div>
     </div>

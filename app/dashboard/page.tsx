@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react"
 import { Clipboard, X, Zap, Sparkles, MessageCircle, Trash2, Menu, Tag, ChevronDown, ChevronUp } from "lucide-react"
 import { nanoid } from "nanoid"
 import Link from "next/link"
-import { useUser } from "@clerk/nextjs"
+import { UserButton, useUser } from "@clerk/nextjs"
 import { motion, AnimatePresence } from "framer-motion"
 
 interface Message {
@@ -27,9 +27,9 @@ function Navbar() {
               <span className="text-2xl font-bold text-white">PookieSMS</span>
             </Link>
           </div>
-          <div className="hidden sm:ml-6 sm:flex sm:items-center">
-            <Link href="/dashboard" className="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-800">Dashboard</Link>
-            <Link href="/profile" className="px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-800">Profile</Link>
+          <div className="hidden sm:ml-6 gap-4 sm:flex sm:items-center">
+            <Link href="/dashboard" className="px-3 py-2 rounded-md text-md font-medium text-gray-300 hover:text-white hover:bg-gray-800">Dashboard</Link>
+            <UserButton />
           </div>
           <div className="-mr-2 flex items-center sm:hidden">
             <button
@@ -51,7 +51,7 @@ function Navbar() {
           >
             <div className="px-2 pt-2 pb-3 space-y-1 bg-gray-900">
               <Link href="/dashboard" className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Dashboard</Link>
-              <Link href="/profile" className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800">Profile</Link>
+              <UserButton />
             </div>
           </motion.div>
         )}
@@ -227,48 +227,55 @@ export default function Dashboard() {
             </h2>
             <div className="bg-gray-700 shadow-md rounded-lg p-4">
               <div 
-                ref={messageContainerRef}
-                className="max-h-96 overflow-y-auto pr-2"
-                onScroll={handleScroll}
+              ref={messageContainerRef}
+              className="max-h-96 overflow-y-auto pr-2"
+              onScroll={handleScroll}
               >
-                <AnimatePresence>
-                  {messages.slice(0, visibleMessages).map((message) => (
-                    <motion.div
-                      key={message.id}
-                      className="border-b border-gray-600 py-3 cursor-pointer hover:bg-gray-600 transition duration-300 rounded-md mb-2"
-                      onClick={() => setSelectedMessage(message)}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <div className="flex justify-between items-start mb-1">
-                        <h3 className="font-semibold text-gray-200">{message.sender}</h3>
-                        <span className="text-xs text-gray-400">{formatDate(message.sentAt)}</span>
-                      </div>
-                      <p className="text-sm text-gray-300 mb-2">{truncateContent(message.content)}</p>
-                      <MessageTypeTag type={message.messageType} />
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
+              <AnimatePresence>
+                {messages.slice(0, visibleMessages).map((message) => (
+             <motion.div
+             key={message.id}
+             className="border border-gray-700 bg-gray-800 p-4 rounded-lg cursor-pointer hover:bg-gray-700 hover:shadow-md transition duration-300 mb-3"
+             onClick={() => setSelectedMessage(message)}
+             initial={{ opacity: 0, y: 20 }}
+             animate={{ opacity: 1, y: 0 }}
+             exit={{ opacity: 0, y: -20 }}
+             transition={{ duration: 0.3 }}
+           >
+             <div className="flex justify-between items-center mb-2">
+               <h3 className="font-semibold text-white text-sm">{message.sender}</h3>
+               <span className="text-xs text-gray-400">{formatDate(message.sentAt)}</span>
+             </div>
+             
+             <p className="text-sm text-gray-300 leading-relaxed mb-3">
+               {truncateContent(message.content)}
+             </p>
+             
+             <div className="flex justify-between items-center">
+               <MessageTypeTag type={message.messageType} />
+             </div>
+           </motion.div>
+           
+                ))}
+              </AnimatePresence>
               </div>
               {visibleMessages < messages.length && (
-                <button
-                  onClick={loadMoreMessages}
-                  className="mt-4 w-full text-center text-gray-400 hover:text-gray-200 transition duration-300"
-                >
-                  <ChevronDown className="inline-block mr-2" />
-                  Load More
-                </button>
+              <button
+                onClick={loadMoreMessages}
+                className="mt-4 w-full text-center text-gray-400 hover:text-gray-200 transition duration-300"
+              >
+                <ChevronDown className="inline-block mr-2" />
+                Load More
+              </button>
               )}
               {visibleMessages > 4 && (
-                <button
-                  onClick={() => setVisibleMessages(4)}
-                  className="mt-2 w-full text-center text-gray-400 hover:text-gray-200 transition duration-300"
-                >
-                  <ChevronUp className="inline-block mr-2" />
-                  Show Less
-                </button>
+              <button
+                onClick={() => setVisibleMessages(4)}
+                className="mt-2 w-full text-center text-gray-400 hover:text-gray-200 transition duration-300"
+              >
+                <ChevronUp className="inline-block mr-2" />
+                Show Less
+              </button>
               )}
             </div>
           </motion.div>

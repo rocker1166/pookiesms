@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
 import { Menu, X } from 'lucide-react';
+import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
@@ -35,6 +36,7 @@ export default function Home() {
           <Link href="/">
             <span className="text-2xl font-bold text-blue-400 hover:text-blue-300 transition duration-300">SecretWhisper</span>
           </Link>
+          <SignedOut>
           <div className="hidden md:flex space-x-6">
             <Link href="/sign-in">
               <span className="hover:text-blue-300 transition duration-300">Login</span>
@@ -43,6 +45,10 @@ export default function Home() {
               <span className="hover:text-blue-300 transition duration-300">Sign Up</span>
             </Link>
           </div>
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
           <div className="md:hidden">
             <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="focus:outline-none">
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -76,11 +82,7 @@ export default function Home() {
                 Get Started
               </span>
             </Link>
-            <Link href="/learn-more">
-              <span className="inline-block bg-transparent border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white font-bold py-2 px-4 rounded transition duration-300 transform hover:scale-105">
-                Learn More
-              </span>
-            </Link>
+
           </div>
         </div>
 
@@ -101,7 +103,7 @@ export default function Home() {
 
       <footer className="bg-black bg-opacity-50 backdrop-filter backdrop-blur-lg p-4 mt-16">
         <div className="container mx-auto text-center">
-          <p>&copy; 2024 SecretWhisper. All rights reserved.</p>
+          <p>&copy; 2024 PookieSMS. Made by  :  <Link className='text-blue-400 font-semibold' href="sumanjana.xyz">Suman Jana</Link> .</p>
           <div className="mt-2 space-x-4">
             <Link href="/privacy">
               <span className="text-sm hover:text-blue-300 transition duration-300">Privacy Policy</span>
